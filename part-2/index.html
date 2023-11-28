@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Dashboard</title>
+    <script src="https://unpkg.com/vue@3"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="user-profile">
+            <img :src="user.profilePicture" alt="Profile Picture" @click="updateProfilePicture">
+            <h2>{{ user.name }}</h2>
+            <p>Email: {{ user.email }}</p>
+            <p v-if="user.isAdmin">Welcome, Admin!</p>
+            <p v-else>Welcome, User!</p>
+            <p>Age: {{ userAge }}</p>
+            <button @click="showForm">Edit</button>
+            <!-- Modal Form -->
+            <div v-if="showModal" class="modal">
+                <form @submit.prevent="updateProfile">
+                    <label for="nameInput">Name:</label>
+                    <input type="text" id="nameInput" v-model="user.name" required>
+
+                    <label for="emailInput">Email:</label>
+                    <input type="email" id="emailInput" v-model="user.email" required>
+
+                    <label for="profilePictureInput">Profile Picture URL:</label>
+                    <input type="text" id="profilePictureInput" v-model="user.profilePicture">
+
+                    <label for="birthdateInput">Birthdate:</label>
+                    <input type="date" id="birthdateInput" v-model="user.birthdate">
+
+                    <div class="btn-wrapper">
+                        <button type="submit">Update</button>
+                        <button @click="hideForm">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = Vue.createApp({
+            data() {
+                return {
+                    user: {
+                        name: 'User',
+                        email: 'user@example.com',
+                        profilePicture: 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg',
+                        birthdate: '1900-01-01',
+                        isAdmin: true
+                    },
+                    showModal: false // Flag to control the modal visibility
+                };
+            },
+            computed: {
+                userAge() {
+                    const birthYear = new Date(this.user.birthdate).getFullYear();
+                    const currentYear = new Date().getFullYear();
+                    return currentYear - birthYear;
+                }
+            },
+            methods: {
+                updateProfile() {
+                    console.log('Profile updated:', this.user);
+                    this.hideForm();
+                },
+                showForm() {
+                    this.showModal = true;
+                },
+                hideForm() {
+                    this.showModal = false;
+                },
+                updateProfilePicture() {
+                    console.log('Profile picture updated!');
+                }
+            },
+            watch: {
+                user: {
+                    handler(newVal, oldVal) {
+                        console.log('User details modified:', newVal);
+                    },
+                    deep: true
+                }
+            },
+            created() {
+                console.log('Fetching user data...');
+                setTimeout(() => {
+                    this.user = {
+                        name: 'User',
+                        email: 'user@example.com',
+                        profilePicture: 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg',
+                        birthdate: '1900-01-01',
+                        isAdmin: true
+                    };
+                    console.log('User data loaded:', this.user);
+                }, 2000);
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

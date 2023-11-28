@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Management App</title>
+</head>
+<body>
+
+  <div id="app">
+    <h1>Task Management App</h1>
+
+    <form @submit.prevent="addTask" class="forms">
+      <div class="wrapper">
+        <input type="text" id="taskTitle" placeholder="Add new task" v-model="newTaskTitle" required>
+        <button id="add" type="submit">Add Task</button>
+      </div>
+
+      <div ref="incompleteContainer" class="column">
+        <h2>Incomplete Tasks</h2>
+        <ul>
+          <li v-for="task in incompleteTasks" :key="task.id">
+            {{ task.title }}
+            <button class="btn-cmplt" @click="markComplete(task)">Mark Complete</button>
+          </li>
+        </ul>
+      </div>
+
+      <div ref="completeContainer" class="column">
+        <h2>Completed Tasks</h2>
+        <ul>
+          <li v-for="task in completedTasks" :key="task.id">
+            {{ task.title }}
+            <button class="btn-cmplt" @click="markIncomplete(task)">Mark Incomplete</button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="column">
+        <h2>Completed:</h2>
+        <div class="circle">
+          <div class="small-circle">
+            {{ percentage }} %
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        tasks: [],
+        newTaskTitle: '',
+        newTaskCompletion: 'false',
+      },
+      computed: {
+        incompleteTasks() {
+          return this.tasks.filter(task => !task.completion);
+        },
+        completedTasks() {
+          return this.tasks.filter(task => task.completion);
+        },
+        totalIncompleteTasks() {
+          return this.incompleteTasks.length;
+        },
+        totalCompletedTasks() {
+          return this.completedTasks.length;
+        },
+        percentage() {
+          let total = Math.ceil((this.totalCompletedTasks / (this.totalCompletedTasks + this.totalIncompleteTasks)) * 100);
+          return total || 0;
+        }
+      },
+      methods: {
+        addTask() {
+          const newTask = {
+            id: this.tasks.length + 1,
+            title: this.newTaskTitle,
+            completion: JSON.parse(this.newTaskCompletion),
+          };
+          this.tasks.push(newTask);
+          this.newTaskTitle = '';
+          this.newTaskCompletion = 'false';
+        },
+        markComplete(task) {
+          task.completion = true;
+        },
+        markIncomplete(task) {
+          task.completion = false;
+        }
+      },
+      watch: {
+        tasks(newTasks, oldTasks) {
+          console.log('Task list modified!');
+        },
+      },
+    });
+  </script>
+</body>
+</html>
